@@ -1,0 +1,96 @@
+/* theme.css - the fixed look of the app: dark panels and cards, normal (light) map.
+   There is no theme switch any more. index.html has data-theme="dark" on the <html> tag,
+   which turns the panels dark. The MAP is never filtered, so it keeps the normal look. */
+
+/* ---------- Colour for text and lines in the accent green ---------- */
+/* The solid green (--accent) is too dark to read as text on a dark page, so text, icons
+   and outlines use a brighter green (--accent-text, set in the dark colours below). */
+:root {
+    --accent-text: #0b6e4f;
+}
+
+.brand-icon {
+    stroke: var(--accent-text);
+}
+
+.bc-group {
+    color: var(--accent-text);
+}
+
+.controls button {
+    color: var(--accent-text);
+    border-color: var(--accent-text);
+}
+
+#route-btn {
+    border-color: var(--accent);
+    /* the solid button keeps its own green edge */
+}
+
+/* ui.js gives the "Nodes checked" line a fixed grey. This lets the theme colour it instead. */
+#route-info~p {
+    color: var(--muted) !important;
+}
+
+/* ---------- Dark colours ---------- */
+/* Only the colour tokens change. The block card has its own copy of them, so it is listed too. */
+:root[data-theme="dark"],
+:root[data-theme="dark"] .block-card {
+    --ink: #e8eaed;
+    --muted: #9aa3ad;
+    --surface: #1c1f24;
+    --page: #2a2f36;
+    --border: #3a4048;
+    --accent-text: #4cc9a0;
+    --accent-soft: #17382d;
+    color-scheme: dark;
+    /* dropdowns, scrollbars and the search box turn dark too */
+}
+
+/* The keyboard focus ring needs a lighter blue on a dark page */
+:root[data-theme="dark"] :focus-visible {
+    outline-color: #8ab4ff;
+}
+
+/* "to be confirmed" tag */
+:root[data-theme="dark"] .bc-tbc {
+    color: #ffd98a;
+    background: #4a3600;
+}
+
+/* The flash on the answer message starts from a dark yellow instead of a light one */
+:root[data-theme="dark"] .bc-flash {
+    animation-name: bc-flash-dark;
+}
+
+@keyframes bc-flash-dark {
+    0% {
+        background: #5a4a10;
+    }
+
+    100% {
+        background: var(--accent-soft);
+    }
+}
+
+/* ---------- The map ---------- */
+/* Nothing here on purpose: the map keeps the normal OpenStreetMap look. */
+
+/* ---------- The title row ---------- */
+.panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.panel-head .brand {
+    margin-bottom: 0;
+}
+
+@media (min-width: 768px) {
+    .panel-head {
+        margin-bottom: 16px;
+    }
+}

@@ -1,0 +1,93 @@
+/* markers.css - round place markers, name labels and the selected look */
+
+/* Leaflet puts this class on the marker box. No background of its own. */
+.mk {
+    background: none;
+    border: 0;
+}
+
+/* The coloured circle */
+.mk-circle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    box-sizing: border-box;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    transform-origin: center;
+    transition: transform 0.15s ease-out;
+}
+
+/* The drawing inside the circle */
+.mk-circle svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Small white dot: "tap me to see rooms and labs" */
+.mk-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 12px;
+    height: 12px;
+    box-sizing: border-box;
+    background: #ffffff;
+    border: 2px solid #0b6e4f;
+    border-radius: 50%;
+}
+
+/* The name label under the circle. Hidden until the map is zoomed in. */
+.mk-label {
+    display: none;
+    position: absolute;
+    top: 34px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 1px 7px;
+    font: 600 11px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    white-space: nowrap;
+    color: #17212b;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid #cfd6dd;
+    border-radius: 10px;
+    pointer-events: none;
+}
+
+/* map.js adds "show-labels" to the map when the zoom is high enough */
+.show-labels .mk-label {
+    display: block;
+}
+
+/* The chosen destination: bigger, with a green halo, and its label always shown */
+.mk-selected .mk-circle {
+    transform: scale(1.25);
+    outline: 3px solid rgba(11, 110, 79, 0.4);
+}
+
+.mk-selected .mk-label {
+    display: block;
+    top: 38px;
+}
+
+/* Keyboard users can see which marker has the focus */
+.mk:focus-visible .mk-circle {
+    outline: 3px solid #1d4ed8;
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mk-circle {
+        transition: none;
+    }
+}

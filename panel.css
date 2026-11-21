@@ -1,0 +1,246 @@
+/* panel.css - what sits inside the route panel under the form:
+   the directions, the "Explore campus" list and the "Algorithm details" row.
+   Loaded after layout.css and before theme.css. */
+
+/* The panel is a column. Short content leaves a gap, and the last row ("Algorithm details")
+   is pushed to the bottom of the panel with margin-top: auto. Long content just scrolls. */
+.route-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.route-panel>* {
+    flex: none;
+}
+
+/* A short note under the distance text (for example about links that only work locally) */
+.share-note {
+    margin: 8px 0 0;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: var(--muted);
+}
+
+.share-note:empty {
+    display: none;
+}
+
+/* ---------- Section titles ---------- */
+.sec-title {
+    margin: 16px 0 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+/* ---------- Directions ---------- */
+.steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 8px 4px;
+    border-radius: 8px;
+}
+
+.step-icon {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    color: var(--accent-text, var(--accent));
+}
+
+.step-icon svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.step-text {
+    line-height: 1.35;
+}
+
+.step-meters {
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+/* Used later to mark the step you are on while walking */
+.step.is-current {
+    background: var(--accent-soft);
+}
+
+/* ---------- Explore campus ---------- */
+.explore {
+    margin-bottom: 12px;
+}
+
+.explore>summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    list-style: none;
+}
+
+.explore>summary::-webkit-details-marker {
+    display: none;
+}
+
+/* A small arrow that turns when the list is open */
+.explore>summary::after {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(-45deg);
+    transition: transform 0.15s ease-out;
+}
+
+.explore[open]>summary::after {
+    transform: rotate(45deg);
+}
+
+.ex-chips {
+    display: flex;
+    gap: 6px;
+    margin: 6px 0 8px;
+    padding-bottom: 2px;
+    overflow-x: auto;
+}
+
+.ex-chip {
+    flex: none;
+    padding: 4px 12px;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--ink);
+    background: var(--page);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.ex-chip[aria-pressed="true"] {
+    color: #ffffff;
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.ex-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ex-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 6px 4px;
+    font: inherit;
+    text-align: left;
+    color: var(--ink);
+    background: none;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+@media (hover: hover) {
+    .ex-row:hover {
+        background: var(--page);
+    }
+}
+
+.ex-icon {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+}
+
+.ex-icon svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.ex-name {
+    flex: 1;
+    min-width: 0;
+}
+
+.ex-sub {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+
+.ex-dist {
+    font-size: 0.85rem;
+    white-space: nowrap;
+    color: var(--muted);
+}
+
+/* ---------- Algorithm details (bottom of the panel) ---------- */
+.algo-details {
+    margin-top: auto;
+    padding-top: 10px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+}
+
+.algo-details summary {
+    cursor: pointer;
+}
+
+.algo-info {
+    margin: 6px 0 0;
+}
+
+/* ---------- Keyboard focus ---------- */
+.ex-chip:focus-visible,
+.ex-row:focus-visible,
+.explore>summary:focus-visible,
+.algo-details summary:focus-visible {
+    outline: 3px solid #1d4ed8;
+    outline-offset: 2px;
+}
+
+/* ---------- Touch screens: bigger targets ---------- */
+@media (pointer: coarse) {
+    .ex-chip {
+        min-height: 36px;
+    }
+
+    .ex-row {
+        padding: 10px 4px;
+    }
+}

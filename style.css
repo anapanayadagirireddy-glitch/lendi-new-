@@ -1,0 +1,158 @@
+/* style.css - colours, base look, and the small parts (fields, buttons, route text).
+   Where things sit on the page (laptop vs phone) is in layout.css. */
+
+/* ---------- Colors and sizes in one place ---------- */
+:root {
+  --ink: #17212b;
+  --muted: #4b5563;
+  --surface: #ffffff;
+  --page: #eef1f4;
+  --border: #cfd6dd;
+  --accent: #0b6e4f;
+  --accent-dark: #09593f;
+  --radius: 8px;
+}
+
+/* Make width/height include padding and borders (much easier to reason about) */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--ink);
+  background: var(--page);
+}
+
+/* The "hidden" attribute must always win, even over our own display rules */
+[hidden] {
+  display: none !important;
+}
+
+/* ---------- Title ---------- */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-weight: 650;
+}
+
+.brand-icon {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- From / To fields ---------- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* The small coloured dots: green = start, red = destination */
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.dot-start {
+  background: #1d9e75;
+}
+
+.dot-end {
+  background: #e24b4a;
+}
+
+.controls select {
+  width: 100%;
+  padding: 9px 10px;
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* ---------- Buttons ---------- */
+/* Every button is the lighter kind by default (Use my location, Share route...) */
+.controls button {
+  padding: 9px 14px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+/* Hover colours only where there is a real mouse. On a phone the colour would otherwise
+   "stick" after a tap. */
+@media (hover: hover) {
+  .controls button:hover {
+    color: #ffffff;
+    background: var(--accent);
+  }
+}
+
+/* While "Use my location" is waiting for the GPS, the button looks switched off */
+.controls button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* "Find route" is the main action, so it is solid green */
+#route-btn {
+  color: #ffffff;
+  background: var(--accent);
+}
+
+@media (hover: hover) {
+  #route-btn:hover {
+    background: var(--accent-dark);
+  }
+}
+
+/* Keyboard users can see where they are */
+.controls select:focus-visible,
+.controls button:focus-visible {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 2px;
+}
+
+/* ---------- Distance / time text ---------- */
+/* Keep this element empty in index.html: the card look below only appears when it has text */
+#route-info {
+  margin: 12px 0 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+#route-info:not(:empty) {
+  padding: 10px 12px;
+  background: var(--page);
+  border-radius: var(--radius);
+}

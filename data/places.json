@@ -1,0 +1,94 @@
+[
+  {
+    "name": "Sai Block",
+    "category": "block",
+    "blockId": "sai-block",
+    "lat": 18.0202,
+    "lng": 83.400443,
+    "entrance": {
+      "lat": 18.020178,
+      "lng": 83.400869
+    }
+  },
+  {
+    "name": "Mechanical block",
+    "category": "block",
+    "blockId": "mechanical-block",
+    "lat": 18.019667,
+    "lng": 83.401285,
+    "entrance": {
+      "lat": 18.019865,
+      "lng": 83.401377
+    }
+  },
+  {
+    "name": "Canteen",
+    "category": "food",
+    "lat": 18.019738,
+    "lng": 83.401065
+  },
+  {
+    "name": "Boys hostel",
+    "category": "hostel",
+    "lat": 18.018464,
+    "lng": 83.402049,
+    "entrance": {
+      "lat": 18.01851,
+      "lng": 83.401899
+    }
+  },
+  {
+    "name": "Girls hostel",
+    "category": "hostel",
+    "lat": 18.021125,
+    "lng": 83.401333,
+    "entrance": {
+      "lat": 18.02082,
+      "lng": 83.401356
+    }
+  },
+  {
+    "name": "Main gate",
+    "category": "gate",
+    "lat": 18.020664,
+    "lng": 83.40235
+  },
+  {
+    "name": "Parking",
+    "category": "parking",
+    "lat": 18.02031,
+    "lng": 83.402414
+  },
+  {
+    "name": "Lendi Grounds",
+    "category": "outdoor",
+    "lat": 18.019199,
+    "lng": 83.401834,
+    "entrance": {
+      "lat": 18.0191447,
+      "lng": 83.4011995
+    }
+  },
+  {
+    "name": "Basketball court",
+    "category": "outdoor",
+    "lat": 18.019861,
+    "lng": 83.401717
+  },
+  {
+    "name": "Toilet",
+    "category": "toilet",
+    "lat": 18.019723,
+    "lng": 83.400658
+  },
+  {
+    "name": "Garden",
+    "category": "outdoor",
+    "lat": 18.020509,
+    "lng": 83.401524,
+    "entrance": {
+      "lat": 18.020479,
+      "lng": 83.401572
+    }
+  }
+]

@@ -1,0 +1,402 @@
+/* sheet.css - the phone layout (screens under 768px).
+A full-screen map, a floating From/To bar on top, and ONE bottom sheet that holds the route
+(peek strip, directions, form) or the block card (rooms and labs).
+Loaded after card.css and panel.css and before theme.css, so it can override them.
+Everything is inside the phone media query, so the laptop layout does not change.
+js/sheet.js sets --sheet-h (the sheet height) and the classes is-dragging, is-hidden
+   and sheet-hidden. */
+
+/* Phone-only parts are off by default (laptops never see them) */
+.sheet-handle,
+.route-bar,
+.peek-bar {
+    display: none;
+}
+
+@media (max-width: 767.98px) {
+
+    /* ---------- The map fills the whole screen ---------- */
+    .app {
+        position: relative;
+    }
+
+    #map {
+        position: absolute;
+        inset: 0;
+        min-height: 0;
+    }
+
+    /* Zoom buttons sit below the floating bar */
+    .leaflet-top {
+        margin-top: 64px;
+    }
+
+    /* ---------- The floating From / To bar ---------- */
+    .route-bar {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        position: absolute;
+        z-index: 1200;
+        top: 12px;
+        left: 12px;
+        right: 12px;
+        height: 48px;
+        padding: 0 6px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s;
+    }
+
+    .route-bar.is-hidden {
+        opacity: 0;
+        transform: translateY(-8px);
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s 0.2s;
+    }
+
+    .rb-place {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1 1 0;
+        min-width: 0;
+        height: 40px;
+        padding: 0 8px;
+        font: inherit;
+        font-size: 0.95rem;
+        font-weight: 600;
+        text-align: left;
+        color: var(--ink);
+        background: none;
+        border: 0;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    .rb-place .dot {
+        flex: none;
+        width: 10px;
+        height: 10px;
+    }
+
+    .rb-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .rb-swap {
+        display: flex;
+        flex: none;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        color: var(--muted);
+        background: none;
+        border: 0;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    .rb-swap svg {
+        width: 18px;
+        height: 18px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    /* ---------- The route panel becomes the sheet ---------- */
+    .route-panel {
+        position: fixed;
+        z-index: 1500;
+        /* above the map controls (1000), below the block card (2000) */
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: var(--sheet-h, 55dvh);
+        max-height: none;
+        padding: 0 14px 14px;
+        border-top: 1px solid var(--border);
+        border-bottom: 0;
+        border-radius: 18px 18px 0 0;
+        box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.3);
+        overscroll-behavior: contain;
+        transition: height 0.25s ease, transform 0.25s ease, visibility 0s;
+    }
+
+    /* In the small size the strip does not scroll */
+    .route-panel[data-sheet="peek"] {
+        overflow: hidden;
+    }
+
+    .route-panel.is-dragging,
+    .block-card.is-dragging {
+        transition: none;
+        user-select: none;
+    }
+
+    /* While the block card is open it takes the sheet's place */
+    .route-panel.sheet-hidden {
+        transform: translateY(100%);
+        visibility: hidden;
+        transition: transform 0.25s ease, visibility 0s 0.25s;
+    }
+
+    /* The title is not shown on a phone, the floating bar and the sheet are enough */
+    .route-panel>.panel-head {
+        display: none;
+    }
+
+    /* The route text is shown in the peek strip instead (js/sheet.js copies it there) */
+    #route-info {
+        display: none;
+    }
+
+    /* ---------- The grab bar ---------- */
+    .sheet-handle {
+        display: flex;
+        justify-content: center;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        width: calc(100% + 28px);
+        margin: 0 -14px;
+        padding: 10px 0 10px;
+        background: var(--surface);
+        border: 0;
+        cursor: grab;
+        touch-action: none;
+        /* so dragging moves the sheet instead of scrolling the page */
+    }
+
+    .sheet-handle span {
+        width: 40px;
+        height: 5px;
+        background: var(--muted);
+        opacity: 0.55;
+        border-radius: 999px;
+    }
+
+    .sheet-handle:focus-visible {
+        outline: 3px solid #1d4ed8;
+        outline-offset: -3px;
+    }
+
+    /* the copy of the handle at the top of the block card */
+    .sheet-handle.in-card {
+        position: static;
+        width: 100%;
+        margin: -6px 0 2px;
+        padding: 8px 0;
+        background: none;
+    }
+
+    /* ---------- The peek strip ---------- */
+    .peek-bar {
+        display: block;
+        padding-bottom: 12px;
+    }
+
+    .pk-summary {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        margin: 0 2px 12px;
+        color: var(--ink);
+    }
+
+    .pk-summary strong {
+        font-size: 1.85rem;
+        font-weight: 700;
+        line-height: 1.1;
+    }
+
+    .pk-summary span {
+        font-size: 1rem;
+        color: var(--muted);
+    }
+
+    .pk-summary.is-text {
+        font-size: 0.95rem;
+        line-height: 1.4;
+    }
+
+    .pk-note {
+        margin: -4px 2px 12px;
+        font-size: 0.85rem;
+        line-height: 1.4;
+        color: var(--muted);
+    }
+
+    /* The destination block: tap it to see its rooms and labs */
+    .pk-dest {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        width: 100%;
+        margin-bottom: 12px;
+        padding: 10px 12px;
+        font: inherit;
+        text-align: left;
+        color: var(--ink);
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        cursor: pointer;
+    }
+
+    .pk-dest-text {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    .pk-dest-text strong {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .pk-dest-text span {
+        font-size: 0.85rem;
+        color: var(--muted);
+    }
+
+    .pk-dest svg {
+        flex: none;
+        width: 18px;
+        height: 18px;
+        fill: none;
+        stroke: var(--muted);
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .pk-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .pk-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 46px;
+        padding: 0;
+        font: inherit;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 12px;
+        cursor: pointer;
+    }
+
+    .pk-primary {
+        flex: 1;
+        color: #ffffff;
+        background: var(--accent);
+        border: 1px solid var(--accent);
+    }
+
+    .pk-icon {
+        flex: none;
+        width: 46px;
+        color: var(--ink);
+        background: none;
+        border: 1px solid var(--border);
+    }
+
+    .pk-icon svg {
+        width: 20px;
+        height: 20px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .pk-btn:focus-visible,
+    .pk-dest:focus-visible,
+    .rb-place:focus-visible,
+    .rb-swap:focus-visible {
+        outline: 3px solid #1d4ed8;
+        outline-offset: 2px;
+    }
+
+    /* ---------- The order inside the sheet ---------- */
+    .route-panel>* {
+        order: 6;
+    }
+
+    .route-panel>.sheet-handle {
+        order: 0;
+    }
+
+    .route-panel>.peek-bar {
+        order: 1;
+    }
+
+    /* the "You have arrived" banner that ui.js adds right after the route text */
+    .route-panel>#route-info+div {
+        order: 2;
+    }
+
+    .route-panel>.directions {
+        order: 3;
+    }
+
+    .route-panel>.controls {
+        order: 4;
+        margin-top: 12px;
+    }
+
+    .route-panel>.explore {
+        order: 5;
+    }
+
+    .route-panel>.algo-details {
+        order: 7;
+    }
+
+    /* ---------- The block card: the same place and heights as the sheet ---------- */
+    .block-card {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: auto;
+        height: var(--sheet-h, 55dvh);
+        max-height: none;
+        border: 0;
+        border-top: 1px solid var(--border);
+        border-radius: 18px 18px 0 0;
+        box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.3);
+        overscroll-behavior: contain;
+        transition: height 0.25s ease;
+    }
+
+    .block-card .bc-top {
+        padding-top: 2px;
+    }
+}
+
+@media (max-width: 767.98px) and (prefers-reduced-motion: reduce) {
+
+    .route-panel,
+    .route-panel.sheet-hidden,
+    .block-card,
+    .route-bar,
+    .route-bar.is-hidden {
+        transition: none;
+    }
+}

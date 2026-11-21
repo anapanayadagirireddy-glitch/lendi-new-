@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- The colour of the browser bar on phones. -->
+  <meta name="theme-color" content="#1c1f24" />
+  <title>Lendi Campus Navigator</title>
+
+  <!-- Leaflet CSS (the map library's styles). Must come BEFORE our own CSS. -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+
+  <!-- Our own styles. sheet.css (phone layout) comes after panel.css, theme.css comes last. -->
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="card.css" />
+  <link rel="stylesheet" href="markers.css" />
+  <link rel="stylesheet" href="layout.css" />
+  <link rel="stylesheet" href="panel.css" />
+  <link rel="stylesheet" href="sheet.css" />
+  <link rel="stylesheet" href="theme.css" />
+</head>
+
+<body>
+  <!-- The whole app: the route panel and the map side by side (laptop) or the map with one
+      bottom sheet over it (phone) -->
+  <div class="app">
+    <!-- Phone only: the floating From / To bar over the map (js/sheet.js) -->
+    <div id="route-bar" class="route-bar" role="group" aria-label="Route">
+      <button id="rb-start" class="rb-place" type="button">
+        <span class="dot dot-start"></span><span class="rb-name">Choose start</span>
+      </button>
+      <button id="rb-swap" class="rb-swap" type="button" aria-label="Swap start and destination">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M7 4L3 8l4 4" />
+          <path d="M3 8h14" />
+          <path d="M17 20l4-4-4-4" />
+          <path d="M21 16H7" />
+        </svg>
+      </button>
+      <button id="rb-end" class="rb-place" type="button">
+        <span class="dot dot-end"></span><span class="rb-name">Choose destination</span>
+      </button>
+    </div>
+
+    <!-- Route panel: the controls the user interacts with.
+        The ids below are used by js/ui.js and js/sheet.js, so keep them as they are. -->
+    <aside class="route-panel" aria-label="Route planner">
+      <!-- Grab bar of the phone bottom sheet (js/sheet.js). Hidden on laptops. -->
+      <button id="sheet-handle" class="sheet-handle" type="button" aria-label="Expand or collapse the panel">
+        <span></span>
+      </button>
+
+      <!-- Phone only: the small strip with the distance, the destination and the buttons -->
+      <div id="peek-bar" class="peek-bar" hidden>
+        <div id="pk-summary" class="pk-summary" aria-live="polite"></div>
+        <p id="pk-note" class="pk-note" hidden></p>
+
+        <button id="pk-dest" class="pk-dest" type="button" hidden>
+          <span class="pk-dest-text">
+            <strong id="pk-dest-name"></strong>
+            <span>Rooms and labs</span>
+          </span>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M9 6l6 6-6 6" />
+          </svg>
+        </button>
+
+        <div id="pk-actions" class="pk-actions" hidden>
+          <button id="pk-steps" class="pk-btn pk-primary" type="button">Directions</button>
+          <button id="pk-share" class="pk-btn pk-icon" type="button" aria-label="Share route" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7" />
+              <path d="M16 6l-4-4-4 4" />
+              <path d="M12 2v14" />
+            </svg>
+          </button>
+          <button id="pk-gps" class="pk-btn pk-icon" type="button" aria-label="Use my location">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="12" r="3" />
+              <circle cx="12" cy="12" r="8" />
+              <path d="M12 2v2M12 20v2M2 12h2M20 12h2" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="panel-head">
+        <h1 class="brand">
+          <svg class="brand-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 21s-6-5.2-6-10a6 6 0 0 1 12 0c0 4.8-6 10-6 10z" />
+            <circle cx="12" cy="11" r="2.2" />
+          </svg>
+          <span>Lendi Navigator</span>
+        </h1>
+      </div>
+
+      <div class="controls">
+        <div class="field">
+          <label for="start-select"><span class="dot dot-start"></span>From</label>
+          <select id="start-select">
+            <option value="">Choose start</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="end-select"><span class="dot dot-end"></span>To</label>
+          <select id="end-select">
+            <option value="">Choose destination</option>
+          </select>
+        </div>
+
+        <button id="route-btn" type="button">Find route</button>
+        <button id="gps-btn" type="button">Use my location</button>
+      </div>
+
+      <!-- Distance and walking time will be shown here (leave it empty) -->
+      <p id="route-info" aria-live="polite"></p>
+
+      <!-- A short note (for example: shared links only work after the site is online) -->
+      <p id="share-note" class="share-note" aria-live="polite"></p>
+
+      <!-- Step-by-step directions. js/panel.js fills this after Find route. -->
+      <section id="directions" class="directions" aria-label="Directions" hidden>
+        <h2 class="sec-title">Directions</h2>
+        <ol id="steps-list" class="steps"></ol>
+      </section>
+
+      <!-- Browse the places on campus. Tapping one makes it the destination. -->
+      <details id="explore" class="explore" open>
+        <summary class="sec-title">Explore campus</summary>
+        <div id="explore-chips" class="ex-chips" role="group" aria-label="Place types"></div>
+        <ul id="explore-list" class="ex-list"></ul>
+      </details>
+
+      <!-- For the curious: how many nodes each algorithm looked at -->
+      <details class="algo-details">
+        <summary>Algorithm details</summary>
+        <p id="algo-info" class="algo-info"></p>
+      </details>
+    </aside>
+
+    <!-- The map goes inside this empty box. map.js will fill it. -->
+    <main id="map"></main>
+
+    <!-- Block details (rooms, labs...). js/card.js fills this and shows or hides it.
+        Wide laptop: docked on the right. Phone: the same bottom sheet as the route. -->
+    <aside id="block-panel" class="block-card" hidden aria-label="Block details"></aside>
+  </div>
+
+  <!-- Leaflet JS. Must load BEFORE our own scripts so "L" exists. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+
+  <!-- Our entry file. It is a module, so ui.js can import the other files. -->
+  <script type="module" src="js/ui.js"></script>
+</body>
+
+</html>
