@@ -265,7 +265,6 @@ export function openBlockCard(blockId) {
                 if (room.verify) li.append(el("span", "bc-tbc", "to be confirmed"));
                 if (id === selectedId) {
                     li.classList.add("bc-highlight");
-                    li.append(el("div", "bc-inline", room.directions)); // directions right under the room
                 }
                 ul.append(li);
             });

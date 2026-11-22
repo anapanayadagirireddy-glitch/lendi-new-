@@ -11,7 +11,7 @@
   <!-- Leaflet CSS (the map library's styles). Must come BEFORE our own CSS. -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
 
-  <!-- Our own styles. sheet.css (phone layout) comes after panel.css, theme.css comes last. -->
+  <!-- Our own styles. sheet.css (phone layout) comes after panel.css, theme.css and laptop.css (laptop layout) come last. -->
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="card.css" />
   <link rel="stylesheet" href="markers.css" />
@@ -19,11 +19,12 @@
   <link rel="stylesheet" href="panel.css" />
   <link rel="stylesheet" href="sheet.css" />
   <link rel="stylesheet" href="theme.css" />
+  <link rel="stylesheet" href="laptop.css" />
 </head>
 
 <body>
   <!-- The whole app: the route panel and the map side by side (laptop) or the map with one
-      bottom sheet over it (phone) -->
+       bottom sheet over it (phone) -->
   <div class="app">
     <!-- Phone only: the floating From / To bar over the map (js/sheet.js) -->
     <div id="route-bar" class="route-bar" role="group" aria-label="Route">
@@ -44,7 +45,7 @@
     </div>
 
     <!-- Route panel: the controls the user interacts with.
-        The ids below are used by js/ui.js and js/sheet.js, so keep them as they are. -->
+         The ids below are used by js/ui.js and js/sheet.js, so keep them as they are. -->
     <aside class="route-panel" aria-label="Route planner">
       <!-- Grab bar of the phone bottom sheet (js/sheet.js). Hidden on laptops. -->
       <button id="sheet-handle" class="sheet-handle" type="button" aria-label="Expand or collapse the panel">
@@ -103,6 +104,14 @@
           </select>
         </div>
 
+        <!-- Swap From and To (js/ui.js) -->
+        <button id="swap-btn" class="swap-btn" type="button" aria-label="Swap From and To" title="Swap From and To">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M8 4v16M8 20l-4-4M8 20l4-4" />
+            <path d="M16 20V4M16 4l-4 4M16 4l4 4" />
+          </svg>
+        </button>
+
         <div class="field">
           <label for="end-select"><span class="dot dot-end"></span>To</label>
           <select id="end-select">
@@ -144,7 +153,7 @@
     <main id="map"></main>
 
     <!-- Block details (rooms, labs...). js/card.js fills this and shows or hides it.
-        Wide laptop: docked on the right. Phone: the same bottom sheet as the route. -->
+         Wide laptop: docked on the right. Phone: the same bottom sheet as the route. -->
     <aside id="block-panel" class="block-card" hidden aria-label="Block details"></aside>
   </div>
 

@@ -1,0 +1,222 @@
+/* laptop.css - the laptop layout (screens 768px and wider). Loaded LAST, after theme.css.
+   ONE panel for everything:
+     - the route panel on the left holds the form, the route and the directions
+     - when you open a block, its rooms and labs show in the SAME panel under two tabs
+       [ Route ] [ Rooms and labs ]  (js/dock.js moves the card in and builds the tabs)
+     - the map keeps all the rest of the screen and never changes size
+   The phone layout is in sheet.css and is not touched here. */
+
+@media (min-width: 768px) {
+
+    :root {
+        --side-w: clamp(260px, 24vw, 320px);
+        --card-w: clamp(280px, 26vw, 380px);
+    }
+
+    .app {
+        position: relative;
+    }
+
+    /* ---------- The left column ---------- */
+    .route-panel {
+        width: var(--side-w);
+        flex: none;
+        padding: 14px 14px 12px;
+        font-size: 0.95rem;
+    }
+
+    .panel-head {
+        margin-bottom: 12px;
+    }
+
+    .controls {
+        gap: 6px;
+    }
+
+    .controls select,
+    .controls button {
+        padding: 8px 10px;
+    }
+
+    /* "Use my location" and "Share route" sit side by side under Find route */
+    .controls #gps-btn,
+    .controls #share-btn {
+        flex: 1 1 calc(50% - 3px);
+        font-size: 0.88rem;
+    }
+
+    /* ---------- The block card, inside the panel (under the tabs) ---------- */
+    .panel-details {
+        order: 5;
+    }
+
+    /* While the block is open the panel does not scroll by itself: the tabs stay on top and
+       only the list of rooms scrolls (the search box and the answer stay fixed above it) */
+    .route-panel.has-card {
+        overflow: hidden;
+    }
+
+    .route-panel.has-card>.panel-details {
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    .panel-details .block-card,
+    .app .panel-details .block-card:not(.bc-floating) {
+        position: static;
+        flex: 1 1 auto;
+        width: auto;
+        height: auto;
+        min-height: 0;
+        max-height: none;
+        padding: 0;
+        overflow-y: auto;
+        background: none;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .panel-details .block-card:not([hidden]) {
+        display: block;
+    }
+
+    /* While the rooms and labs are open, the panel shows ONLY the block: no From / To form,
+       no route text, no directions, no Explore list. The Route tab brings them back. */
+    .route-panel.has-card>.controls,
+    .route-panel.has-card>#route-info,
+    .route-panel.has-card>#route-info+div,
+    .route-panel.has-card>.share-note,
+    .route-panel.has-card>.directions,
+    .route-panel.has-card>.explore,
+    .route-panel.has-card>.algo-details {
+        display: none;
+    }
+
+    /* the two tabs */
+    .panel-tabs {
+        order: 1;
+        display: flex;
+        gap: 4px;
+        margin: 0 0 12px;
+        padding: 3px;
+        background: var(--page);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+    }
+
+    .panel-tabs[hidden] {
+        display: none;
+    }
+
+    .panel-tab {
+        flex: 1;
+        min-height: 34px;
+        padding: 0 4px;
+        font: inherit;
+        font-size: 0.85rem;
+        white-space: nowrap;
+        font-weight: 600;
+        color: var(--muted);
+        background: none;
+        border: 0;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .panel-tab[aria-selected="true"] {
+        color: #ffffff;
+        background: var(--accent);
+    }
+
+    .panel-tab:disabled {
+        opacity: 0.45;
+        cursor: default;
+    }
+
+    .panel-tab:focus-visible {
+        outline: 3px solid #1d4ed8;
+        outline-offset: 2px;
+    }
+
+    /* the top part (title, search, answer, floors) stays put while the rooms scroll */
+    .block-card .bc-top {
+        position: sticky;
+        top: 0;
+        z-index: 3;
+        margin: 0;
+        padding: 0 0 10px;
+        background: var(--surface);
+    }
+
+    .block-card .bc-title {
+        font-size: 1.2rem;
+    }
+
+    /* the phone grab bar is never needed here */
+    .block-card .sheet-handle {
+        display: none;
+    }
+
+    /* the map zoom buttons stay in the top left of the MAP area */
+    .leaflet-top.leaflet-left {
+        margin-top: 0;
+    }
+}
+
+/* ---------- The order of things inside the panel (laptop) ---------- */
+@media (min-width: 768px) {
+
+    .route-panel>.panel-head { order: 0; }
+    .route-panel>.controls { order: 2; }
+    .route-panel>#route-info { order: 3; }
+    .route-panel>#route-info+div { order: 4; }
+    .route-panel>.share-note { order: 4; }
+    .route-panel>.directions { order: 6; }
+    .route-panel>.explore { order: 7; }
+    .route-panel>.algo-details { order: 8; }
+
+    /* the phone strip is not used on a laptop */
+    .peek-bar { display: none; }
+}
+
+/* ---------- Swap button between From and To (laptop and phone sheet) ---------- */
+.controls #swap-btn {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    min-height: 0;
+    padding: 0;
+    margin: -6px 6px -6px auto;
+    /* sits on the right, between the two boxes */
+    color: var(--accent-text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+}
+
+.controls #swap-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.controls #swap-btn:hover {
+    background: var(--accent-soft);
+}
+
+@media (pointer: coarse) {
+    .controls #swap-btn {
+        width: 44px;
+        height: 44px;
+    }
+}

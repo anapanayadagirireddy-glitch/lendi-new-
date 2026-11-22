@@ -9,7 +9,6 @@ import {
   addPlaceMarker,
   setSelectedMarker,
   fitRoute,
-  focusPlace,
 } from "./map.js";
 import { buildGraph, haversine } from "./graph.js";
 import { dijkstra } from "./dijkstra.js";
@@ -20,7 +19,8 @@ import { enableCompass, startTracking, recenter, isTracking } from "./tracker.js
 import { makeRoute, updateProgress, rerouteFrom } from "./progress.js";
 import { buildDirections } from "./directions.js";
 import { initExplore, showSteps, clearSteps } from "./panel.js";
-import { initSheet, setPeekDestination, fitRouteInView, isPhoneLayout, getSheetCover } from "./sheet.js";
+import { initSheet, setPeekDestination, fitRouteInView, isPhoneLayout } from "./sheet.js";
+import { initDock, setDockBlock } from "./dock.js";
 
 // true  = "collect mode": click a place on the map and it shows its coordinates
 //         (we use this to fill places.json)
@@ -51,6 +51,7 @@ async function loadPlaces() {
 async function start() {
   initMap();
   initSheet(); // the phone bottom sheet (does nothing on a laptop)
+  initDock(); // laptop: the block card lives inside the left panel, under tabs
 
   // Load the graph data that convert.js created
   const nodes = await (await fetch("data/nodes.json")).json();
@@ -124,11 +125,7 @@ async function start() {
       fitRouteInView();
       return;
     }
-    const panel = document.getElementById("block-panel");
-    // On a small laptop the card floats over the map. A docked side panel does not cover it.
-    const isSheet =
-      panel && !panel.hidden && panel.getBoundingClientRect().width >= window.innerWidth - 1;
-    fitRoute(isSheet ? panel.offsetHeight : 0);
+    // On a laptop the card is inside the left panel, so the map does not change size.
   });
 
   // Snap every place to its nearest graph node, and fill both dropdowns.
@@ -153,7 +150,9 @@ async function start() {
 
     // Tapping the marker of a block that has room details opens its card
     marker.on("click", () => {
-      if (place.blockId) openBlockCard(place.blockId);
+      if (!place.blockId) return;
+      setDockBlock(place); // laptop: keeps the "Rooms and labs" tab usable after the Route tab
+      openBlockCard(place.blockId);
     });
 
     for (const select of [startSelect, endSelect]) {
@@ -189,11 +188,14 @@ async function start() {
     sharedRoute = null;
     shareBtn.hidden = true;
     setSelectedMarker(place.marker);
-    focusPlace(place.lat, place.lng, Math.max(getMap().getZoom(), 18), getSheetCover());
+    getMap().setView([place.lat, place.lng], Math.max(getMap().getZoom(), 18));
     info.textContent =
       startSelect.value === String(index)
         ? `You are already at ${place.name}.`
         : `Destination: ${place.name}. Choose where you are, or tap Use my location.`;
+    // A block opens its rooms and labs: in the bottom sheet on a phone, and in the left panel
+    // (under the tabs, with no From / To form) on a laptop.
+    setDockBlock(place.blockId ? place : null);
     if (place.blockId) openBlockCard(place.blockId);
     else closeCard();
   }
@@ -438,6 +440,21 @@ async function start() {
     }
   });
 
+  // ---------- Swap From and To ----------
+  // From = Main gate, To = Sai Block  ->  From = Sai Block, To = Main gate. If both are
+  // chosen, the new route is shown straight away.
+  document.getElementById("swap-btn").addEventListener("click", () => {
+    if (startSelect.value === "me") {
+      info.textContent = "My location cannot be a destination, so it cannot be swapped.";
+      return;
+    }
+    const from = startSelect.value;
+    startSelect.value = endSelect.value;
+    endSelect.value = from;
+    startSelect.dispatchEvent(new Event("change")); // updates the Explore distances
+    if (startSelect.value !== "" && endSelect.value !== "") routeBtn.click();
+  });
+
   // ---------- "Find route" ----------
   routeBtn.addEventListener("click", () => {
     arrivedBanner.hidden = true;
@@ -449,6 +466,7 @@ async function start() {
     activeRoute = null;
     arrived = false;
     setSelectedMarker(null); // no destination marker until a route is found
+    setDockBlock(null); // no block tab until a route to a block is found
     if (startSelect.value === "" || endSelect.value === "") {
       info.textContent = "Please choose both a start and a destination.";
       return;
@@ -524,10 +542,12 @@ async function start() {
       `Route: ${result.path.length} nodes, ${meters} m, Dijkstra looked at ${result.visitedCount} nodes`
     );
 
-    // If the destination is a block with room details, open its card.
+    // If the destination is a block with room details, open its card (on a laptop it takes
+    // the place of the left panel, press X to go back to the directions).
     // On a phone the card does not open by itself: the small strip shows the block, and
     // tapping it opens the card (so the route stays visible first).
     setPeekDestination(to);
+    setDockBlock(to);
     if (to.blockId && !isPhoneLayout()) {
       openBlockCard(to.blockId);
     } else {

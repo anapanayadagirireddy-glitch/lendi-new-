@@ -23,6 +23,9 @@ let selectedMarker = null; // the marker of the chosen destination (drawn bigger
 let routeLine = null; // the green line: the part of the route still to walk
 let walkedLine = null; // the grey line: the part of the route already walked
 let userMarker = null; // the dot showing the user's GPS position
+let startPoint = null; // the green point at the start of the route
+let endPoint = null; // the red point at the end of the route
+let startLatLng = null; // remembered, so a new route while walking keeps the first green point
 
 // ---------- Setup ----------
 
@@ -59,7 +62,8 @@ export function getMap() {
 // Returns the Leaflet marker, so the caller can add a click handler or select it later.
 export function addPlaceMarker(name, lat, lng, options = {}) {
   return L.marker([lat, lng], {
-    icon: createPlaceIcon(name, options),
+    // hasDetails is forced off: the small white dot on the blocks is not shown any more
+    icon: createPlaceIcon(name, { ...options, hasDetails: false }),
     title: name, // the browser shows this when you hover (laptop)
     alt: name,
     riseOnHover: true,
@@ -104,6 +108,12 @@ export function drawRoute(latlngs, fit = true) {
     opacity: 0.9,
   }).addTo(map);
 
+  // The green start point and the red end point. When the route is redrawn while you walk
+  // (fit = false) the green point stays where the trip began.
+  if (fit || !startLatLng) startLatLng = latlngs[0];
+  startPoint = routePoint(startLatLng, "#1d9e75", "Start");
+  endPoint = routePoint(latlngs[latlngs.length - 1], "#e24b4a", "End");
+
   if (fit) {
     map.fitBounds(routeLine.getBounds(), { padding: [40, 40] });
   }
@@ -120,14 +130,6 @@ export function fitRoute(bottomExtra = 0) {
     paddingTopLeft: [40, 40 + topExtra],
     paddingBottomRight: [40, 40 + bottomExtra],
   });
-}
-
-// Moves the map so a place sits in the middle of the part you can see (between the floating
-// From/To bar and the bottom sheet on a phone). coverBottom = pixels the sheet covers.
-export function focusPlace(lat, lng, zoom, coverBottom = 0) {
-  const topExtra = window.matchMedia("(max-width: 767.98px)").matches ? 64 : 0;
-  map.setView([lat, lng], zoom, { animate: false });
-  map.panBy([0, (coverBottom - topExtra) / 2], { animate: false });
 }
 
 // Updates the route while you walk, without redrawing it and without moving the map.
@@ -152,7 +154,28 @@ export function updateRoute(remaining, walked = []) {
   }
 }
 
+// A round point with a white edge, drawn over the route line
+function routePoint(latlng, color, label) {
+  return L.circleMarker(latlng, {
+    radius: 9,
+    color: "#ffffff",
+    weight: 3,
+    fillColor: color,
+    fillOpacity: 1,
+  })
+    .bindTooltip(label)
+    .addTo(map);
+}
+
 export function clearRoute() {
+  if (startPoint) {
+    map.removeLayer(startPoint);
+    startPoint = null;
+  }
+  if (endPoint) {
+    map.removeLayer(endPoint);
+    endPoint = null;
+  }
   if (routeLine) {
     map.removeLayer(routeLine);
     routeLine = null;

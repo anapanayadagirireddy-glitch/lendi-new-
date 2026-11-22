@@ -50,8 +50,12 @@
   {
     "name": "Main gate",
     "category": "gate",
-    "lat": 18.020664,
-    "lng": 83.40235
+    "lat": 18.02075,
+    "lng": 83.40265,
+    "entrance": {
+      "lat": 18.0206893,
+      "lng": 83.402469
+    }
   },
   {
     "name": "Parking",
